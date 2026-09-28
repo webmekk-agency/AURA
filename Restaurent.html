@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AURA — Contemporary Dining & Fine Cuisine</title>
+  
+  <!-- Fonts: Playfair Display & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            aura: {
+              bg: '#11100E',
+              sec: '#1A1815',
+              card: '#211F1B',
+              text: '#F5F1E8',
+              muted: '#A9A39A',
+              gold: '#C9A227',
+              goldLight: '#E2C76B',
+              border: '#38342D'
+            }
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          },
+          boxShadow: {
+            'gold-glow': '0 0 35px -5px rgba(201, 162, 39, 0.15)',
+            'card-hover': '0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 15px 0px rgba(201, 162, 39, 0.08)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #11100E;
+      color: #F5F1E8;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .font-playfair {
+      font-family: 'Playfair Display', serif;
+    }
+
+    .page-view {
+      display: none;
+      animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .page-view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #11100E; }
+    ::-webkit-scrollbar-thumb { background: #38342D; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #C9A227; }
+
+    .gold-underline {
+      position: relative;
+    }
+    .gold-underline::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0%;
+      height: 1px;
+      background-color: #C9A227;
+      transition: width 0.3s ease;
+    }
+    .gold-underline:hover::after,
+    .gold-underline.active::after {
+      width: 100%;
+    }
+
+    .image-zoom-container {
+      overflow: hidden;
+    }
+    .image-zoom-container img {
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .image-zoom-container:hover img {
+      transform: scale(1.06);
+    }
+
+    .glass-card {
+      background: #211F1B;
+      border: 1px solid #38342D;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card:hover {
+      border-color: #C9A227;
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 15px 0px rgba(201, 162, 39, 0.08);
+    }
+
+    .aura-input {
+      background-color: #1A1815;
+      border: 1px solid #38342D;
+      color: #F5F1E8;
+      transition: all 0.3s ease;
+    }
+    .aura-input:focus {
+      outline: none;
+      border-color: #C9A227;
+      box-shadow: 0 0 0 1px #C9A227;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-aura-gold selection:text-aura-bg flex flex-col min-h-screen">
+
+  <!-- ================= HEADER / NAVBAR ================= -->
+  <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent" id="navbar">
+    <div class="max-w-[1360px] mx-auto px-6 lg:px-12 h-24 flex items-center justify-between">
+      
+      <a href="javascript:void(0)" onclick="navigateTo('home')" class="flex items-center gap-3 group">
+        <span class="font-serif text-2xl lg:text-3xl font-bold tracking-widest text-aura-text group-hover:text-aura-gold transition-colors duration-300">AURA</span>
+        <span class="w-1.5 h-1.5 rounded-full bg-aura-gold"></span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-10">
+        <a href="javascript:void(0)" onclick="navigateTo('home')" class="nav-btn gold-underline text-xs tracking-widest font-medium uppercase text-aura-text hover:text-aura-gold transition-colors py-1" id="nav-home">Home</a>
+        <a href="javascript:void(0)" onclick="navigateTo('menu')" class="nav-btn gold-underline text-xs tracking-widest font-medium uppercase text-aura-muted hover:text-aura-gold transition-colors py-1" id="nav-menu">Menu</a>
+        <a href="javascript:void(0)" onclick="navigateTo('about')" class="nav-btn gold-underline text-xs tracking-widest font-medium uppercase text-aura-muted hover:text-aura-gold transition-colors py-1" id="nav-about">About</a>
+        <a href="javascript:void(0)" onclick="navigateTo('gallery')" class="nav-btn gold-underline text-xs tracking-widest font-medium uppercase text-aura-muted hover:text-aura-gold transition-colors py-1" id="nav-gallery">Gallery</a>
+        <a href="javascript:void(0)" onclick="navigateTo('contact')" class="nav-btn gold-underline text-xs tracking-widest font-medium uppercase text-aura-muted hover:text-aura-gold transition-colors py-1" id="nav-contact">Contact</a>
+      </nav>
+
+      <div class="hidden md:flex items-center">
+        <a href="javascript:void(0)" onclick="navigateTo('reservation')" class="inline-flex items-center justify-center px-6 py-3 text-xs tracking-widest uppercase font-semibold text-aura-bg bg-aura-gold hover:bg-aura-goldLight transition-all duration-300 shadow-gold-glow">
+          Reserve a Table
+        </a>
+      </div>
+
+      <button class="md:hidden text-aura-text hover:text-aura-gold transition-colors p-2" id="mobile-menu-btn" aria-label="Toggle Navigation">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8h16M4 16h16"></path></svg>
+      </button>
+
+    </div>
+
+    <div class="hidden md:hidden bg-aura-sec border-b border-aura-border px-8 py-8 flex-col gap-5" id="mobile-menu">
+      <a href="javascript:void(0)" onclick="navigateTo('home')" class="text-xs tracking-widest uppercase font-medium text-aura-text hover:text-aura-gold">Home</a>
+      <a href="javascript:void(0)" onclick="navigateTo('menu')" class="text-xs tracking-widest uppercase font-medium text-aura-muted hover:text-aura-gold">Menu</a>
+      <a href="javascript:void(0)" onclick="navigateTo('about')" class="text-xs tracking-widest uppercase font-medium text-aura-muted hover:text-aura-gold">About</a>
+      <a href="javascript:void(0)" onclick="navigateTo('gallery')" class="text-xs tracking-widest uppercase font-medium text-aura-muted hover:text-aura-gold">Gallery</a>
+      <a href="javascript:void(0)" onclick="navigateTo('contact')" class="text-xs tracking-widest uppercase font-medium text-aura-muted hover:text-aura-gold">Contact</a>
+      <div class="pt-4 border-t border-aura-border">
+        <a href="javascript:void(0)" onclick="navigateTo('reservation')" class="w-full inline-flex items-center justify-center py-3 text-xs tracking-widest uppercase font-semibold text-aura-bg bg-aura-gold">
+          Reserve a Table
+        </a>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ================= MAIN CONTENT APP AREA ================= -->
+  <main class="flex-grow">
+
+    <!-- ================= PAGE 1: HOME ================= -->
+    <div id="page-home" class="page-view active">
+      
+      <!-- HERO SECTION -->
+      <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        <div class="absolute inset-0 z-0">
+          <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2000&auto=format&fit=crop" alt="AURA Fine Dining Ambience" class="w-full h-full object-cover object-center scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-aura-bg via-aura-bg/75 to-aura-bg/50"></div>
+        </div>
+
+        <div class="max-w-[1360px] mx-auto px-6 lg:px-12 text-center relative z-10 py-24 flex flex-col items-center">
+          <span class="text-xs font-mono tracking-[0.3em] uppercase text-aura-gold mb-6 border border-aura-gold/30 px-4 py-1.5 rounded-full bg-aura-bg/50 backdrop-blur-sm">
+            EST. 2026
+          </span>
+          <h1 class="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-normal tracking-tight text-aura-text leading-[1.05] max-w-5xl mb-8">
+            A TABLE WORTH<br /><span class="italic text-aura-gold font-light">REMEMBERING.</span>
+          </h1>
+          <p class="text-aura-muted text-base sm:text-lg max-w-xl font-light tracking-wide leading-relaxed mb-10">
+            Contemporary cuisine. Thoughtfully crafted with modern technique and timeless flavours.
+          </p>
+          <div class="flex flex-col sm:flex-row items-center gap-5 w-full sm:w-auto">
+            <a href="javascript:void(0)" onclick="navigateTo('menu')" class="w-full sm:w-auto px-8 py-4 text-xs font-semibold tracking-widest uppercase border border-aura-gold text-aura-text hover:bg-aura-gold hover:text-aura-bg transition-all duration-300">
+              Explore Menu
+            </a>
+            <a href="javascript:void(0)" onclick="navigateTo('reservation')" class="w-full sm:w-auto px-8 py-4 text-xs font-semibold tracking-widest uppercase bg-aura-gold text-aura-bg hover:bg-aura-goldLight transition-all duration-300 shadow-gold-glow">
+              Reserve a Table
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- INTRO / PHILOSOPHY SECTION -->
+      <section class="py-28 bg-aura-bg border-b border-aura-border">
+        <div class="max-w-[1360px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+          <div class="lg:col-span-6 space-y-6">
+            <span class="text-xs font-mono tracking-[0.25em] text-aura-gold uppercase block">OUR PHILOSOPHY</span>
+            <h2 class="font-serif text-3xl sm:text-5xl font-normal text-aura-text leading-tight">
+              Food is more than a meal.<br />
+              <span class="italic font-light text-aura-muted">It's an experience shared around the table.</span>
+            </h2>
+            <p class="text-aura-muted text-sm leading-relaxed font-light pt-2">
+              At AURA, every plate tells a story of origin, seasonality, and intentional cooking. We blend culinary restraint with inventive flavour profiles, giving familiar comfort a modern elevation.
+            </p>
+            <div class="pt-4">
+              <a href="javascript:void(0)" onclick="navigateTo('about')" class="inline-flex items-center gap-3 text-xs tracking-widest uppercase font-semibold text-aura-gold hover:text-aura-goldLight transition-colors">
+                Read Our Story <span class="text-sm">→</span>
+              </a>
+            </div>
+          </div>
+          <div class="lg:col-span-6">
+            <div class="image-zoom-container rounded-sm border border-aura-border relative">
+              <img src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200&auto=format&fit=crop" alt="Culinary Art Dish" class="w-full h-[480px] object-cover" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SIGNATURE DISHES SECTION -->
+      <section class="py-28 bg-aura-sec border-b border-aura-border">
+        <div class="max-w-[1360px] mx-auto px-6 lg:px-12">
+          <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div>
+              <span class="text-xs font-mono tracking-[0.25em] text-aura-gold uppercase block mb-2">CURATED SELECTIONS</span>
+              <h2 class="font-serif text-3xl sm:text-5xl font-normal text-aura-text">Our Signatures</h2>
+            </div>
+            <a href="javascript:void(0)" onclick="navigateTo('menu')" class="text-xs tracking-widest uppercase text-aura-muted hover:text-aura-gold transition-colors">
+              View All Dishes →
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="glass-card rounded-sm overflow-hidden group">
+              <div class="image-zoom-container h-80 relative">
+                <img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=800&auto=format&fit=crop" alt="Truffle Pasta" class="w-full h-full object-cover" />
+                <span class="absolute top-4 right-4 bg-aura-bg/80 backdrop-blur-md px-3 py-1 text-xs font-mono text-aura-gold border border-aura-border">
+                  ₹ 650
+                </span>
+              </div>
+              <div class="p-8 space-y-3">
+                <h3 class="font-serif text-2xl font-normal text-aura-text">Truffle Pasta</h3>
+                <p class="text-xs text-aura-muted tracking-wide font-light">Fresh pasta • Truffle • Parmesan</p>
+              </div>
+            </div>
+
+            <div class="glass-card rounded-sm overflow-hidden group">
+              <div class="image-zoom-container h-80 relative">
+                <img src="https://images.unsplash.com/photo-1608039829572-78524f79c4c7?auto=format&fit=crop&w=800&q=80"" alt="Burrata Salad" class="w-full h-full object-cover" />
+                <span class="absolute top-4 right-4 bg-aura-bg/80 backdrop-blur-md px-3 py-1 text-xs font-mono text-aura-gold border border-aura-border">
+                  ₹ 450
+                </span>
+              </div>
+              <div class="p-8 space-y-3">
+                <h3 class="font-serif text-2xl font-normal text-aura-text">Burrata</h3>
+                <p class="text-xs text-aura-muted tracking-wide font-light">Fresh tomato • Basil • Olive Oil</p>
+              </div>
+            </div>
+
+            <div class="glass-card rounded-sm overflow-hidden group">
+              <div class="image-zoom-container h-80 relative">
+                <img src="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?q=80&w=800&auto=format&fit=crop" alt="Classic Tiramisu" class="w-full h-full object-cover" />
+                <span class="absolute top-4 right-4 bg-aura-bg/80 backdrop-blur-md px-3 py-1 text-xs font-mono text-aura-gold border border-aura-border">
+                  ₹ 350
+                </span>
+              </div>
+              <div class="p-8 space-y-3">
+                <h3 class="font-serif text-2xl font-normal text-aura-text">Classic Tiramisu</h3>
+                <p class="text-xs text-aura-muted tracking-wide font-light">Coffee • Mascarpone • Cocoa</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MENU PREVIEW SECTION -->
+      <section class="py-28 bg-aura-bg border-b border-aura-border">
+        <div class="max-w-[900px] mx-auto px-6">
+          <div class="text-center mb-16">
+            <span class="text-xs font-mono tracking-[0.25em] text-aura-gold uppercase block mb-2">PREVIEW</span>
+            <h2 class="font-serif text-4xl sm:text-5xl font-normal text-aura-text">OUR MENU</h2>
+          </div>
+
+          <div class="space-y-12">
+            <div>
+              <div class="flex items-center gap-4 mb-6">
+                <span class="text-xs font-mono tracking-[0.2em] text-aura-gold uppercase font-semibold">STARTERS</span>
+                <div class="flex-grow h-[1px] bg-aura-border"></div>
+              </div>
+              <div class="flex justify-between items-baseline py-3 border-b border-aura-border/40">
+                <div>
+                  <h4 class="font-serif text-lg text-aura-text">Burrata</h4>
+                  <p class="text-xs text-aura-muted font-light mt-1">Tomato • Basil • Olive Oil</p>
+                </div>
+                <span class="font-mono text-sm text-aura-gold">₹450</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center gap-4 mb-6">
+                <span class="text-xs font-mono tracking-[0.2em] text-aura-gold uppercase font-semibold">MAIN COURSE</span>
+                <div class="flex-grow h-[1px] bg-aura-border"></div>
+              </div>
+              <div class="flex justify-between items-baseline py-3 border-b border-aura-border/40">
+                <div>
+                  <h4 class="font-serif text-lg text-aura-text">Truffle Pasta</h4>
+                  <p class="text-xs text-aura-muted font-light mt-1">Parmesan • Mushroom</p>
+                </div>
+                <span class="font-mono text-sm text-aura-gold">₹650</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center gap-4 mb-6">
+                <span class="text-xs font-mono tracking-[0.2em] text-aura-gold uppercase font-semibold">DESSERT</span>
+                <div class="flex-grow h-[1px] bg-aura-border"></div>
+              </div>
+              <div class="flex justify-between items-baseline py-3 border-b border-aura-border/40">
+                <div>
+                  <h4 class="font-serif text-lg text-aura-text">Classic Tiramisu</h4>
+                  <p class="text-xs text-aura-muted font-light mt-1">Coffee • Mascarpone</p>
+                </div>
+                <span class="font-mono text-sm text-aura-gold">₹350</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center mt-12">
+            <a href="javascript:void(0)" onclick="navigateTo('menu')" class="inline-flex items-center gap-2 px-8 py-4 border border-aura-gold text-xs tracking-widest uppercase font-semibold text-aura-text hover:bg-aura-gold hover:text-aura-bg transition-all">
+              View Full Menu <span class="text-sm">→</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- CHEF SECTION -->
+      <section class="py-28 bg-aura-sec border-b border-aura-border">
+        <div class="max-w-[1360px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+          <div class="lg:col-span-6 order-2 lg:order-1">
+            <div class="image-zoom-container border border-aura-border relative">
+              <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=1200&auto=format&fit=crop" alt="Executive Chef" class="w-full h-[520px] object-cover" />
+            </div>
+          </div>
+          <div class="lg:col-span-6 order-1 lg:order-2 space-y-6">
+            <span class="text-xs font-mono tracking-[0.25em] text-aura-gold uppercase block">THE CHEF</span>
+            <h2 class="font-serif text-3xl sm:text-5xl font-normal text-aura-text leading-tight">
+              Crafting every plate<br />
+              <span class="italic font-light text-aura-muted">with intention.</span>
+            </h2>
+            <p class="text-aura-muted text-sm leading-relaxed font-light">
+              Our kitchen brings together seasonal ingredients, modern techniques and timeless flavours. Led by culinary passion, every menu creation brings balance, depth, and artistry to your plate.
+            </p>
+            <div class="pt-4">
+              <a href="javascript:void(0)" onclick="navigateTo('about')" class="inline-flex items-center gap-2 text-xs tracking-widest uppercase font-semibold text-aura-gold hover:text-aura-goldLight transition-colors">
+                Meet Our Chef <span class="text-sm">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXPERIENCE SECTION -->
+      <section class="py-28 bg-aura-bg border-b border-aura-border">
+        <div class="max-w-[1360px] mx-auto px-6 lg:px-12">
+          <div class="text-center max-w-2xl mx-auto mb-20">
+            <span class="text-xs font-mono tracking-[0.25em] text-aura-gold uppercase block mb-3">CURATED ATMOSPHERE</span>
+            <h2 class="font-serif text-3xl sm:text-5xl font-normal text-aura-text">
+              AN EXPERIENCE,<br /><span class="italic font-light text-aura-gold">NOT JUST A MEAL.</span>
+            </h2>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="p-8 bg-aura-card border border-aura-border space-y-4">
+              <span class="font-mono text-3xl font-light text-aura-gold block">01</span>
+              <h3 class="font-serif text-xl font-normal text-aura-text">Fresh Ingredients</h3>
+              <p class="text-xs text-aura-muted leading-relaxed font-light">Sourced daily from sustainable local farms and artisan producers.</p>
+            </div>
+            <div class="p-8 bg-aura-card border border-aura-border space-y-4">
+              <span class="font-mono text-3xl font-light text-aura-gold block">02</span>
+              <h3 class="font-serif text-xl font-normal text-aura-text">Handcrafted Dishes</h3>
+              <p class="text-xs text-aura-muted leading-relaxed font-light">Artisanal pastas and rich, simmered reductions made from scratch daily.</p>
+            </div>
+            <div class="p-8 bg-aura-card border border-aura-border space-y-4">
+              <span class="font-mono text-3xl font-light text-aura-gold block">03</span>
+              <h3 class="font-serif text-xl font-normal text-aura-text">Elegant Atmosphere</h3>
+              <p class="text-xs text-aura-muted leading-relaxed font-light">Warm ambient lighting, understated acoustic harmony, and sleek design.</p>
+            </div>
+            <div class="p-8 bg-aura-card border border-aura-border space-y-4">
+              <span class="font-mono text-3xl font-light text-aura-gold block">04</span>
+              <h3 class="font-serif text-xl font-normal text-aura-text">Exceptional Service</h3>
+              <p class="text-xs text-aura-muted leading-relaxed font-light">Thoughtful hospitality focused on crafting a memorable dining moment.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GALLERY SECTION -->
+      <section class="py-28 bg-aura-sec border-b border-aura-border">
+        <div class="max-w-[1360px] mx-auto px-6 lg:px-12">
+          <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div>
+              <span class="text-xs font-mono tracking-[0.25em] text-aura-gold uppercase block mb-2">VISUALS</span>
+              <h2 class="font-serif text-3xl sm:text-5xl font-normal text-aura-text">The Gallery</h2>
+            </div>
+            <a href="javascript:void(0)" onclick="navigateTo('gallery')" class="text-xs tracking-widest uppercase text-aura-muted hover:text-aura-gold transition-colors">
+              Explore Full Gallery →
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div class="md:col-span-5 image-zoom-container h-[380px] border border-aura-border">
+              <img src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=800&auto=format&fit=crop" alt="Interior Seating" class="w-full h-full object-cover" />
+            </div>
+            <div class="md:col-span-7 image-zoom-container h-[380px] border border-aura-border">
+              <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1200&auto=format&fit=crop" alt="Food Presentation" class="w-full h-full object-cover" />
+            </div>
+            <div class="md:col-span-7 image-zoom-container h-[380px] border border-aura-border">
+              <img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1200&auto=format&fit=crop" alt="Bar Ambience" class="w-full h-full object-cover" />
+            </div>
+            <div class="md:col-span-5 image-zoom-container h-[380px] border border-aura-border">
+              <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=800&auto=format&fit=crop" alt="Plated Cuisine" class="w-full h-full object-cover" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- LOCATION SECTION -->
+      <section class="py-28 bg-aura-bg border-b border-aura-border">
+        <div class="max-w-[1360px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+          <div class="lg:col-span-5 space-y-8">
+            <span class="text-xs font-mono tracking-[0.25em] text-aura-gold uppercase block">LOCATION & HOURS</span>
+            <h2 class="font-serif text-3xl sm:text-5xl font-normal text-aura-text">VISIT US</h2>
+            
+            <div class="space-y-6 text-sm text-aura-muted font-light">
+              <div class="space-y-1">
+                <span class="text-xs font-mono uppercase text-aura-gold block">ADDRESS</span>
+                <p class="text-aura-text text-base">123 Restaurant Street</p>
+                <p>Haridwar, Uttarakhand</p>
+              </div>
+
+              <div class="space-y-1">
+                <span class="text-xs font-mono uppercase text-aura-gold block">HOURS</span>
+                <p class="text-aura-text">Mon — Sun</p>
+                <p>12:00 PM — 11:00 PM</p>
+              </div>
+            </div>
+
+            <div>
+              <a href="https://maps.google.com" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 border border-aura-gold text-xs tracking-widest uppercase font-semibold text-aura-text hover:bg-aura-gold hover:text-aura-bg transition-all">
+                Get Directions ↗
+              </a>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7">
+            <div class="w-full h-[420px] bg-aura-card border border-aura-border relative rounded-sm flex items-center justify-center overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=1200&auto=format&fit=crop" alt="Map Styling Graphic" class="w-full h-full object-cover opacity-30 grayscale" />
+              <div class="absolute inset-0 bg-gradient-to-t from-aura-bg via-transparent to-aura-bg/50"></div>
+              <div class="relative z-10 text-center p-6 bg-aura-sec/90 border border-aura-border backdrop-blur-md max-w-xs">
+                <span class="w-3 h-3 rounded-full bg-aura-gold inline-block mb-3 animate-ping"></span>
+                <h4 class="font-serif text-lg text-aura-text font-normal">AURA Haridwar</h4>
+                <p class="text-xs text-aura-muted font-light mt-1">123 Restaurant Street, Uttarakhand</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RESERVATION CTA SECTION -->
+      <section class="py-32 bg-aura-sec text-center relative overflow-hidden">
+        <div class="max-w-[1360px] mx-auto px-6 relative z-10 space-y-8">
+          <span class="text-xs font-mono tracking-[0.3em] uppercase text-aura-gold block">TABLE AVAILABILITY</span>
+          <h2 class="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-normal text-aura-text tracking-tight leading-none">
+            YOUR TABLE<br /><span class="italic font-light text-aura-gold">IS WAITING.</span>
+          </h2>
+          <div class="pt-6">
+            <a href="javascript:void(0)" onclick="navigateTo('reservation')" class="inline-flex items-center justify-center px-10 py-5 text-xs font-semibold tracking-widest uppercase text-aura-bg bg-aura-gold hover:bg-aura-goldLight transition-all duration-300 shadow-gold-glow">
+              Reserve a Table
+            </a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+
+    <!-- ================= PAGE 2: MENU ================= -->
+    <div id="page-menu" class="page-view">
+      <section class="py-24 border-b border-aura-border bg-aura-sec">
+        <div class="max-w-[1360px] mx-auto px-6 text-center">
+          <span class="text-xs font-mono tracking-[0.3em] uppercase text-aura-gold block mb-3">SOPHISTICATED DINING</span>
+          <h1 class="font-serif text-4xl sm:text-6xl font-normal text-aura-text">MENU</h1>
+        </div>
+      </section>
+
+      <section class="py-24 bg-aura-bg">
+        <div class="max-w-[850px] mx-auto px-6 space-y-20">
+          
+          <!-- STARTERS -->
+          <div>
+            <div class="flex items-center gap-6 mb-12">
+              <h2 class="font-serif text-2xl tracking-widest uppercase text-aura-gold font-normal">STARTERS</h2>
+              <div class="flex-grow h-[1px] bg-aura-border"></div>
+            </div>
+
+            <div class="space-y-8">
+              <div class="flex justify-between items-start border-b border-aura-border/40 pb-6">
+                <div class="space-y-1">
+                  <h3 class="font-serif text-xl text-aura-text">Burrata</h3>
+                  <p class="text-xs text-aura-muted font-light max-w-md">Fresh tomato, basil, olive oil</p>
+                </div>
+                <span class="font-mono text-base text-aura-gold font-medium ml-4">₹450</span>
+              </div>
+
+              <div class="flex justify-between items-start border-b border-aura-border/40 pb-6">
+                <div class="space-y-1">
+                  <h3 class="font-serif text-xl text-aura-text">Truffle Fries</h3>
+                  <p class="text-xs text-aura-muted font-light max-w-md">Parmesan, herbs, truffle oil</p>
+                </div>
+                <span class="font-mono text-base text-aura-gold font-medium ml-4">₹390</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- MAIN COURSE -->
+          <div>
+            <div class="flex items-center gap-6 mb-12">
+              <h2 class="font-serif text-2xl tracking-widest uppercase text-aura-gold font-normal">MAIN COURSE</h2>
+              <div class="flex-grow h-[1px] bg-aura-border"></div>
+            </div>
+
+            <div class="space-y-8">
+              <div class="flex justify-between items-start border-b border-aura-border/40 pb-6">
+                <div class="space-y-1">
+                  <h3 class="font-serif text-xl text-aura-text">Truffle Pasta</h3>
+                  <p class="text-xs text-aura-muted font-light max-w-md">Fresh pasta, mushroom, parmesan</p>
+                </div>
+                <span class="font-mono text-base text-aura-gold font-medium ml-4">₹650</span>
+              </div>
+
+              <div class="flex justify-between items-start border-b border-aura-border/40 pb-6">
+                <div class="space-y-1">
+                  <h3 class="font-serif text-xl text-aura-text">Grilled Chicken</h3>
+                  <p class="text-xs text-aura-muted font-light max-w-md">Seasonal vegetables, herb sauce</p>
+                </div>
+                <span class="font-mono text-base text-aura-gold font-medium ml-4">₹750</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- DESSERT -->
+          <div>
+            <div class="flex items-center gap-6 mb-12">
+              <h2 class="font-serif text-2xl tracking-widest uppercase text-aura-gold font-normal">DESSERT</h2>
+              <div class="flex-grow h-[1px] bg-aura-border"></div>
+            </div>
+
+            <div class="space-y-8">
+              <div class="flex justify-between items-start border-b border-aura-border/40 pb-6">
+                <div class="space-y-1">
+                  <h3 class="font-serif text-xl text-aura-text">Tiramisu</h3>
+                  <p class="text-xs text-aura-muted font-light max-w-md">Classic Italian dessert</p>
+                </div>
+                <span class="font-mono text-base text-aura-gold font-medium ml-4">₹350</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+
+    <!-- ================= PAGE 3: ABOUT ================= -->
+    <div id="page-about" class="page-view">
+      <section class="py-24 border-b border-aura-border bg-aura-sec">
+        <div class="max-w-[1360px] mx-auto px-6 text-center">
+          <span class="text-xs font-mono tracking-[0.3em] uppercase text-aura-gold block mb-3">OUR HERITAGE</span>
+          <h1 class="font-serif text-4xl sm:text-6xl font-normal text-aura-text">ABOUT AURA</h1>
+        </div>
+      </section>
+
+      <section class="py-24 bg-aura-bg border-b border-aura-border">
+        <div class="max-w-[1100px] mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <div>
+            <span class="text-xs font-mono tracking-[0.2em] text-aura-gold uppercase block mb-3">EST. 2026</span>
+            <h2 class="font-serif text-3xl sm:text-4xl font-normal text-aura-text mb-6">A Culinary Sanctuary</h2>
+            <p class="text-aura-muted text-sm leading-relaxed font-light mb-4">
+              AURA was born from a desire to bring a refined contemporary dining experience to Haridwar, Uttarakhand. Blending timeless culinary methods with modern flair, every dish is served in an ambient environment designed to make time stand still.
+            </p>
+          </div>
+          <div class="image-zoom-container border border-aura-border">
+            <img src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=1000&auto=format&fit=crop" alt="AURA Restaurant Interior" class="w-full h-[420px] object-cover" />
+          </div>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- ================= PAGE 4: GALLERY ================= -->
+    <div id="page-gallery" class="page-view">
+      <section class="py-24 border-b border-aura-border bg-aura-sec">
+        <div class="max-w-[1360px] mx-auto px-6 text-center">
+          <span class="text-xs font-mono tracking-[0.3em] uppercase text-aura-gold block mb-3">VISUAL JOURNEY</span>
+          <h1 class="font-serif text-4xl sm:text-6xl font-normal text-aura-text">GALLERY</h1>
+        </div>
+      </section>
+
+      <section class="py-24 bg-aura-bg">
+        <div class="max-w-[1360px] mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="image-zoom-container h-80 border border-aura-border">
+            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800&auto=format&fit=crop" alt="Food Photo 1" class="w-full h-full object-cover" />
+          </div>
+          <div class="image-zoom-container h-80 border border-aura-border">
+            <img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=800&auto=format&fit=crop" alt="Food Photo 2" class="w-full h-full object-cover" />
+          </div>
+          <div class="image-zoom-container h-80 border border-aura-border">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=800&auto=format&fit=crop" alt="Food Photo 3" class="w-full h-full object-cover" />
+          </div>
+          <div class="image-zoom-container h-80 border border-aura-border">
+            <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800&auto=format&fit=crop" alt="Restaurant Interior" class="w-full h-full object-cover" />
+          </div>
+          <div class="image-zoom-container h-80 border border-aura-border">
+            <img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=800&auto=format&fit=crop" alt="Bar" class="w-full h-full object-cover" />
+          </div>
+          <div class="image-zoom-container h-80 border border-aura-border">
+            <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=800&auto=format&fit=crop" alt="Chef Craft" class="w-full h-full object-cover" />
+          </div>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- ================= PAGE 5: RESERVATION ================= -->
+    <div id="page-reservation" class="page-view">
+      <section class="py-24 border-b border-aura-border bg-aura-sec">
+        <div class="max-w-[1360px] mx-auto px-6 text-center">
+          <span class="text-xs font-mono tracking-[0.3em] uppercase text-aura-gold block mb-3">BOOKING</span>
+          <h1 class="font-serif text-4xl sm:text-6xl font-normal text-aura-text">RESERVE YOUR TABLE</h1>
+        </div>
+      </section>
+
+      <section class="py-24 bg-aura-bg">
+        <div class="max-w-[1200px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+          
+          <div class="lg:col-span-5 image-zoom-container border border-aura-border hidden lg:block sticky top-32">
+            <img src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=1000&auto=format&fit=crop" alt="Dining Table Setup" class="w-full h-[580px] object-cover" />
+          </div>
+
+          <div class="lg:col-span-7">
+            <form class="space-y-6" onsubmit="event.preventDefault(); alert('Reservation Confirmed!');">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-xs font-mono uppercase tracking-widest text-aura-muted mb-2">Name</label>
+                  <input type="text" required placeholder="Name" class="w-full h-12 px-4 aura-input text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-mono uppercase tracking-widest text-aura-muted mb-2">Email</label>
+                  <input type="email" required placeholder="Email" class="w-full h-12 px-4 aura-input text-sm" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-xs font-mono uppercase tracking-widest text-aura-muted mb-2">Phone</label>
+                  <input type="tel" required placeholder="Phone" class="w-full h-12 px-4 aura-input text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-mono uppercase tracking-widest text-aura-muted mb-2">Guests</label>
+                  <select class="w-full h-12 px-4 aura-input text-sm">
+                    <option>1 Guest</option>
+                    <option selected>2 Guests</option>
+                    <option>4 Guests</option>
+                    <option>6+ Guests</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-xs font-mono uppercase tracking-widest text-aura-muted mb-2">Date</label>
+                  <input type="date" required class="w-full h-12 px-4 aura-input text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-mono uppercase tracking-widest text-aura-muted mb-2">Time</label>
+                  <select class="w-full h-12 px-4 aura-input text-sm">
+                    <option>12:00 PM</option>
+                    <option>01:30 PM</option>
+                    <option>07:00 PM</option>
+                    <option>08:30 PM</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-mono uppercase tracking-widest text-aura-muted mb-2">Special Request</label>
+                <textarea rows="4" placeholder="Special Request" class="w-full p-4 aura-input text-sm"></textarea>
+              </div>
+
+              <button type="submit" class="w-full h-14 bg-aura-gold text-aura-bg text-xs font-semibold tracking-widest uppercase hover:bg-aura-goldLight transition-all shadow-gold-glow">
+                CONFIRM RESERVATION
+              </button>
+            </form>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+
+    <!-- ================= PAGE 6: CONTACT ================= -->
+    <div id="page-contact" class="page-view">
+      <section class="py-24 border-b border-aura-border bg-aura-sec">
+        <div class="max-w-[1360px] mx-auto px-6 text-center">
+          <span class="text-xs font-mono tracking-[0.3em] uppercase text-aura-gold block mb-3">GET IN TOUCH</span>
+          <h1 class="font-serif text-4xl sm:text-6xl font-normal text-aura-text">CONTACT</h1>
+        </div>
+      </section>
+
+      <section class="py-24 bg-aura-bg">
+        <div class="max-w-[1100px] mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16">
+          <div class="space-y-8">
+            <h2 class="font-serif text-3xl font-normal text-aura-text">Visit Us</h2>
+            <div class="space-y-4 text-sm font-light text-aura-muted">
+              <div>
+                <span class="text-xs font-mono uppercase text-aura-gold block mb-1">ADDRESS</span>
+                <span class="text-aura-text">123 Restaurant Street, Haridwar, Uttarakhand</span>
+              </div>
+              <div>
+                <span class="text-xs font-mono uppercase text-aura-gold block mb-1">PHONE</span>
+                <span class="text-aura-text">+91 XXXXX XXXXX</span>
+              </div>
+              <div>
+                <span class="text-xs font-mono uppercase text-aura-gold block mb-1">EMAIL</span>
+                <span class="text-aura-text">hello@restaurant.com</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <form class="space-y-6" onsubmit="event.preventDefault(); alert('Message Sent!');">
+              <div>
+                <label class="block text-xs font-mono uppercase tracking-widest text-aura-muted mb-2">Name</label>
+                <input type="text" required placeholder="Name" class="w-full h-12 px-4 aura-input text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-mono uppercase tracking-widest text-aura-muted mb-2">Email</label>
+                <input type="email" required placeholder="Email" class="w-full h-12 px-4 aura-input text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-mono uppercase tracking-widest text-aura-muted mb-2">Message</label>
+                <textarea rows="4" required placeholder="Message" class="w-full p-4 aura-input text-sm"></textarea>
+              </div>
+              <button type="submit" class="w-full h-12 border border-aura-gold text-xs font-semibold tracking-widest uppercase text-aura-text hover:bg-aura-gold hover:text-aura-bg transition-all">
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="bg-aura-bg border-t border-aura-border pt-20 pb-12 mt-auto">
+    <div class="max-w-[1360px] mx-auto px-6 lg:px-12">
+      
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b border-aura-border/60">
+        <div class="md:col-span-4 space-y-4">
+          <a href="javascript:void(0)" onclick="navigateTo('home')" class="flex items-center gap-3">
+            <span class="font-serif text-2xl font-bold tracking-widest text-aura-text">AURA</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-aura-gold"></span>
+          </a>
+          <p class="text-xs text-aura-muted font-light leading-relaxed max-w-xs">
+            A dining experience crafted with intention.
+          </p>
+        </div>
+
+        <div class="md:col-span-3 space-y-3">
+          <h4 class="text-xs font-mono text-aura-gold uppercase tracking-widest">QUICK LINKS</h4>
+          <ul class="space-y-2 text-xs text-aura-muted font-light">
+            <li><a href="javascript:void(0)" onclick="navigateTo('home')" class="hover:text-aura-text transition-colors">Home</a></li>
+            <li><a href="javascript:void(0)" onclick="navigateTo('menu')" class="hover:text-aura-text transition-colors">Menu</a></li>
+            <li><a href="javascript:void(0)" onclick="navigateTo('about')" class="hover:text-aura-text transition-colors">About</a></li>
+            <li><a href="javascript:void(0)" onclick="navigateTo('gallery')" class="hover:text-aura-text transition-colors">Gallery</a></li>
+            <li><a href="javascript:void(0)" onclick="navigateTo('contact')" class="hover:text-aura-text transition-colors">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="md:col-span-3 space-y-3">
+          <h4 class="text-xs font-mono text-aura-gold uppercase tracking-widest">OPENING HOURS</h4>
+          <div class="text-xs text-aura-muted font-light space-y-1">
+            <p class="text-aura-text">Mon — Sun</p>
+            <p>12 PM — 11 PM</p>
+          </div>
+        </div>
+
+        <div class="md:col-span-2 space-y-3">
+          <h4 class="text-xs font-mono text-aura-gold uppercase tracking-widest">CONTACT</h4>
+          <div class="text-xs text-aura-muted font-light space-y-1">
+            <p>+91 XXXXX XXXXX</p>
+            <p>hello@restaurant.com</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-aura-muted font-light gap-4">
+        <div class="flex gap-6">
+          <a href="#" class="hover:text-aura-gold transition-colors">Instagram</a>
+          <a href="#" class="hover:text-aura-gold transition-colors">Facebook</a>
+        </div>
+        <div>© 2026 Restaurant</div>
+        <div>
+          <a href="javascript:void(0)" onclick="navigateTo('about')" class="hover:text-aura-gold transition-colors">Privacy Policy</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+
+  <script>
+    function navigateTo(pageId) {
+      const pages = document.querySelectorAll('.page-view');
+      pages.forEach(p => p.classList.remove('active'));
+
+      const navBtns = document.querySelectorAll('.nav-btn');
+      navBtns.forEach(btn => btn.classList.remove('active'));
+
+      const targetPage = document.getElementById('page-' + pageId);
+      if (targetPage) {
+        targetPage.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      const activeNav = document.getElementById('nav-' + pageId);
+      if (activeNav) {
+        activeNav.classList.add('active');
+      }
+
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (!mobileMenu.classList.contains('hidden')) {
+        mobileMenu.classList.add('hidden');
+        mobileMenu.classList.remove('flex');
+      }
+    }
+
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 40) {
+        navbar.classList.add('bg-aura-bg/90', 'backdrop-blur-md', 'border-aura-border');
+        navbar.classList.remove('border-transparent');
+      } else {
+        navbar.classList.remove('bg-aura-bg/90', 'backdrop-blur-md', 'border-aura-border');
+        navbar.classList.add('border-transparent');
+      }
+    });
+
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      mobileMenu.classList.toggle('flex');
+    });
+  </script>
+
+</body>
+</html>
